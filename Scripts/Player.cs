@@ -4,9 +4,13 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public DataController DataController;
+
+
     public float maxSpeed;
     public float jumpPower;
     public bool isGround;
+    public bool isGetDouble;
     public int jumpCount = 1;
     public int playerHp;
 
@@ -16,16 +20,22 @@ public class Player : MonoBehaviour
     public Transform pos;
     public Vector2 boxSize;
 
+
+    public GameObject player;
+    public GameObject monster;
     public GameObject hp1;
     public GameObject hp2;
     public GameObject hp3;
     public GameObject hp4;
+    public GameObject item;
 
     Rigidbody2D rigid;
 
     SpriteRenderer spriteRenderer;
 
     Animator anim;
+
+
 
 
     void Start()
@@ -35,6 +45,8 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
 
         isGround = false;
+
+        isGetDouble = false;
 
         jumpCount = 0;
 
@@ -51,6 +63,7 @@ public class Player : MonoBehaviour
                 {
                     rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
                     jumpCount--;//점프 가능 횟수 감소
+                    anim.SetBool("isJumping",true);
                 }
             }
         }
@@ -93,7 +106,7 @@ public class Player : MonoBehaviour
                    if(collider.tag == "Monster")
                    {
                         collider.GetComponent<Monster>().TakeDamage(1);
-                   }
+                    }
                 }
                 anim.SetTrigger("atk");
                 curTime = coolTime;
@@ -104,18 +117,25 @@ public class Player : MonoBehaviour
             curTime -= Time.deltaTime;
         }
 
-
-
     }
-
+    
     void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.tag == "Ground")
         {
+            anim.SetBool("isJumping", false);
             isGround = true;    //Ground에 닿으면 isGround는 true
-            jumpCount = 1;          //Ground에 닿으면 점프횟수가 1로 초기화됨
+            if(isGetDouble == false)
+            {
+                jumpCount = 1; //아이템을 먹지 않은 상태에서 Ground에 닿으면 점프횟수가 1로 초기화됨
+            }
+            else
+            {
+                jumpCount = 2; //아이템을 먹은 후부터는 2단 점프가 가능함
+            } 
         }
-
+        
+        //몬스터에 닿을 시 플레이어의 체력이 감소
         if(col.gameObject.tag == "Monster")
         {
             OnDamaged(col.transform.position);
@@ -135,8 +155,24 @@ public class Player : MonoBehaviour
             if (playerHp == 0)
             {
                 hp4.SetActive(false);
+                Die();
             }
         }
+
+        //아이템 획득시 2단 점프 가능
+        if (col.gameObject.tag == "Item")
+        {
+            jumpCount = 2;
+            isGetDouble = true;
+            item.SetActive(false);
+        }
+
+        //가로등과 충돌시 저장
+        if(col.gameObject.layer == 7)
+        {
+            DataController.gameData.isClear1 = true;
+        }
+
     }
 
     void FixedUpdate()
@@ -163,12 +199,12 @@ public class Player : MonoBehaviour
 
     void OnDamaged(Vector2 targetPos)
     {
-        gameObject.layer = 5;
+        gameObject.layer = 7;
 
         spriteRenderer.color = new Color(1, 1, 1, 0.5f);
 
         int dirc = transform.position.x - targetPos.x > 0 ? 1 : -1;
-        rigid.AddForce(new Vector2(dirc, -2) * 10.0f, ForceMode2D.Impulse);
+        rigid.AddForce(new Vector2(dirc, 1) * 5.0f, ForceMode2D.Impulse);
 
         Invoke("OffDamaged", 2);
     }
@@ -177,7 +213,11 @@ public class Player : MonoBehaviour
     {
         gameObject.layer = 3;
         spriteRenderer.color = new Color(1, 1, 1, 1);
+    }
 
+    void Die()
+    {
+        player.SetActive(false);
     }
 
     //공격 범위를 나타내는 기즈모 그리는 함수
