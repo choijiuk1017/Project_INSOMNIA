@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class DataController : MonoBehaviour
 {
+    public Player player;
+
+    public GameObject Lamp1;
+    public GameObject Lamp2;
+
     //싱글톤 선언
     static GameObject _container;
     static GameObject Container
@@ -53,6 +58,11 @@ public class DataController : MonoBehaviour
     {
         LoadGameData();
         SaveGameData();
+        //isClear1이 참이면 중간 지점에서 시작
+        if(gameData.isClear1 == true)
+        {
+            player.transform.position = Lamp1.transform.position;
+        }
     }
 
     //저장된 게임 불러오기
@@ -88,8 +98,6 @@ public class DataController : MonoBehaviour
         print("저장완료");
         print("1는 " + gameData.isClear1);
         print("2는 " + gameData.isClear2);
-        print("3는 " + gameData.isClear3);
-        print("4는 " + gameData.isClear4);
     }
 
     //게임이 종료되면 자동저장되도록(임시)

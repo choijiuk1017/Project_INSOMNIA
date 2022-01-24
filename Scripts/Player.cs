@@ -28,6 +28,7 @@ public class Player : MonoBehaviour
     public GameObject hp3;
     public GameObject hp4;
     public GameObject item;
+    public GameObject gameoverCanvas;
 
     Rigidbody2D rigid;
 
@@ -144,7 +145,7 @@ public class Player : MonoBehaviour
             {
                 hp1.SetActive(false);
             }
-            if (playerHp == 2)
+            if (playerHp == 2)  
             {
                 hp2.SetActive(false);
             }
@@ -167,17 +168,30 @@ public class Player : MonoBehaviour
             item.SetActive(false);
         }
 
+    }
+
+    //가로등에 isTrigger을 적용하기 때문에 OnTriggerEnter에서 처리
+    private void OnTriggerEnter2D(Collider2D col)
+    {
         //가로등과 충돌시 저장
-        if(col.gameObject.layer == 7)
+        if (col.gameObject.tag == "Lamp1")
         {
             DataController.gameData.isClear1 = true;
+            playerHp = 4;
+            hp1.SetActive(true);
+            hp2.SetActive(true);
+            hp3.SetActive(true);
         }
 
+        if (col.gameObject.tag == "DeadZone")
+        {
+            Die();
+        }
     }
 
     void FixedUpdate()
     {
-        move();  
+        move();
     }
 
     //플레이어 이동함수
@@ -218,6 +232,7 @@ public class Player : MonoBehaviour
     void Die()
     {
         player.SetActive(false);
+        gameoverCanvas.SetActive(true);
     }
 
     //공격 범위를 나타내는 기즈모 그리는 함수
