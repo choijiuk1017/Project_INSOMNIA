@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    public DataController DataController;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,7 +20,9 @@ public class GameManager : MonoBehaviour
 
     public void OnClickRestart()
     {
+        DataController.SaveGameData();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        DataController.LoadGameData();
     }
 
     public void OnClickExit()
