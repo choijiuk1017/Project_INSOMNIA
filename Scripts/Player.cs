@@ -5,14 +5,13 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public DataController DataController;
-
+    public HealthPointManager HealthPointManager;
 
     public float maxSpeed;
     public float jumpPower;
     public bool isGround;
     public bool isGetDouble;
     public int jumpCount = 1;
-    public int playerHp;
 
     private float curTime;
     public float coolTime = 0.5f;
@@ -23,10 +22,6 @@ public class Player : MonoBehaviour
 
     public GameObject player;
     public GameObject monster;
-    public GameObject hp1;
-    public GameObject hp2;
-    public GameObject hp3;
-    public GameObject hp4;
     public GameObject item;
     public GameObject gameoverCanvas;
 
@@ -35,9 +30,6 @@ public class Player : MonoBehaviour
     SpriteRenderer spriteRenderer;
 
     Animator anim;
-
-
-
 
     void Start()
     {
@@ -51,7 +43,6 @@ public class Player : MonoBehaviour
 
         jumpCount = 0;
 
-        playerHp = 4;
     }
 
     private void Update()
@@ -118,6 +109,12 @@ public class Player : MonoBehaviour
             curTime -= Time.deltaTime;
         }
 
+
+        if(DataController.gameData.isClear1 == true && HealthPointManager.startHealthContainer < 2)
+        {
+            HealthPointManager.TakeDamage(HealthPointManager.startHealthContainer * HealthPointManager.healthPerHeart);
+            HealthPointManager.AddHeartContainer();
+        }
     }
     
     void OnCollisionEnter2D(Collision2D col)
@@ -140,24 +137,7 @@ public class Player : MonoBehaviour
         if(col.gameObject.tag == "Monster")
         {
             OnDamaged(col.transform.position);
-            playerHp--;
-            if(playerHp == 3)
-            {
-                hp1.SetActive(false);
-            }
-            if (playerHp == 2)  
-            {
-                hp2.SetActive(false);
-            }
-            if (playerHp == 1)
-            {
-                hp3.SetActive(false);
-            }
-            if (playerHp == 0)
-            {
-                hp4.SetActive(false);
-                Die();
-            }
+            HealthPointManager.TakeDamage(-1);
         }
 
         //아이템 획득시 2단 점프 가능
@@ -177,10 +157,6 @@ public class Player : MonoBehaviour
         if (col.gameObject.tag == "Lamp1")
         {
             DataController.gameData.isClear1 = true;
-            playerHp = 4;
-            hp1.SetActive(true);
-            hp2.SetActive(true);
-            hp3.SetActive(true);
         }
 
         if (col.gameObject.tag == "DeadZone")
@@ -211,9 +187,10 @@ public class Player : MonoBehaviour
         }
     }
 
+    //플레이어가 데미지를 입을 경우 무적시간을 주는 함수
     void OnDamaged(Vector2 targetPos)
     {
-        gameObject.layer = 7;
+        gameObject.layer = 8;
 
         spriteRenderer.color = new Color(1, 1, 1, 0.5f);
 
@@ -229,7 +206,7 @@ public class Player : MonoBehaviour
         spriteRenderer.color = new Color(1, 1, 1, 1);
     }
 
-    void Die()
+    public void Die()
     {
         player.SetActive(false);
         gameoverCanvas.SetActive(true);
