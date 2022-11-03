@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Block
+  - Dust1
+  - Dust2
+  - Dust3
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Game
+  - Water
+  - UI
+  - dust3
+  - Monster
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Ignore
+    uniqueID: 1779014827
+    locked: 0
+  - name: Game
+    uniqueID: 3300900463
+    locked: 0
